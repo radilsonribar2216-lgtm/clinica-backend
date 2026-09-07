@@ -1,78 +1,89 @@
-# Backend Clínica Veterinaria — Primer Parcial Programación Web (NRC 83862)
+# Backend Clínica Veterinaria — Primer Parcial
 
-Proyecto Spring Boot + Maven que resuelve los 5 requerimientos del parcial sobre la base
-de datos `clinica` (formulas médicas, citas, historia médica y anotaciones).
+Proyecto realizado para la materia de Programación Web (NRC 83862).
 
-## 1. Restaurar la base de datos en MySQL Workbench
+El proyecto está desarrollado con **Spring Boot y Maven** y trabaja con la base de datos `clinica`.
 
-1. Abre **MySQL Workbench** y conéctate a tu servidor local (`root` / tu contraseña).
-2. Crea la base de datos (si no existe):
-   ```sql
-   CREATE DATABASE clinica CHARACTER SET utf8mb4;
-   ```
-3. Restaura el backup:
-   - Menú **Server > Data Import**.
-   - Selecciona **Import from Self-Contained File** y elige `database/clinica_backup.sql`
-     (incluido en este proyecto).
-   - En **Default Target Schema** elige `clinica`.
-   - Clic en **Start Import**.
-   - Alternativa por consola (cmd/terminal, con `mysql` en el PATH):
-     ```bash
-     mysql -u root -p clinica < database/clinica_backup.sql
-     ```
-4. Verifica que las tablas quedaron creadas: `cita`, `cliente`, `especializacion`,
-   `formula_medica`, `historia_medica`, `anotacion_historia`, `mascota`, `medicamento`,
-   `medico`, `raza`, `session`, `usuario`.
+## 1. Base de datos
 
-## 2. Configurar la conexión del backend
+La copia de la base de datos se encuentra en:
 
-Abre `src/main/resources/application.properties` y ajusta usuario/contraseña de tu MySQL local:
+`database/clinica_backup.sql`
+
+Para restaurarla en MySQL Workbench:
+
+1. Abrir MySQL Workbench y conectarse al servidor local.
+2. Crear la base de datos si todavía no existe:
+
+```sql
+CREATE DATABASE clinica CHARACTER SET utf8mb4;
+```
+
+3. Ir a **Server > Data Import**.
+4. Seleccionar **Import from Self-Contained File**.
+5. Seleccionar el archivo `database/clinica_backup.sql`.
+6. Elegir la base de datos `clinica`.
+7. Iniciar la importación.
+
+La base de datos contiene las tablas necesarias para el funcionamiento del proyecto.
+
+## 2. Configuración
+
+En el archivo:
+
+`src/main/resources/application.properties`
+
+se debe colocar el usuario y contraseña de MySQL local.
+
+Ejemplo:
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/clinica?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
 spring.datasource.username=root
-spring.datasource.password=TU_PASSWORD_AQUI
+spring.datasource.password=TU_PASSWORD
 ```
 
-No cambies `spring.jpa.hibernate.ddl-auto=none`: la base ya existe (restaurada del backup),
-así que Spring **no** debe intentar crear ni modificar las tablas.
+La opción `spring.jpa.hibernate.ddl-auto=none` se mantiene porque las tablas ya están creadas en la base de datos.
 
-## 3. Abrir y ejecutar el proyecto en IntelliJ IDEA
+## 3. Ejecutar el proyecto
 
-1. **File > Open** y selecciona la carpeta `clinica-backend` (la que contiene `pom.xml`).
-2. IntelliJ detecta que es un proyecto Maven y descarga las dependencias automáticamente
-   (ícono del elefante de Maven en la barra lateral derecha si quieres forzar el *reload*).
-3. Verifica el JDK del proyecto: **File > Project Structure > Project** → SDK 17 o superior.
-4. Ejecuta la clase `ClinicaApplication` (botón ▶ verde) o desde terminal:
-   ```bash
-   mvn spring-boot:run
-   ```
-5. El backend queda escuchando en `http://localhost:8080`.
+Abrir la carpeta del proyecto desde **IntelliJ IDEA**.
 
-Si prefieres compilar el `.zip` que exige la entrega:
+El proyecto utiliza Maven, por lo que IntelliJ descargará las dependencias necesarias.
+
+Se puede ejecutar desde la clase:
+
+`ClinicaApplication`
+
+o desde la terminal:
+
 ```bash
-mvn clean package
+mvn spring-boot:run
 ```
-Esto genera `target/clinica-backend.jar`, listo para comprimir junto al código como pide el enunciado.
 
-## 4. Endpoints disponibles
+El backend se ejecuta en:
 
-| # Requerimiento | Método | Endpoint | Descripción |
-|---|---|---|---|
-| 1 | GET | `/api/formulas` | Lista fórmulas médicas ordenadas por fecha de creación (desc) |
-| 2/3 | GET | `/api/citas?fechaInicio=2024-01-01T00:00:00&fechaFin=2025-12-31T23:59:59` | Filtra citas por rango de fecha (desc) |
-| 4 | POST | `/api/citas` | Crea una nueva cita |
-| 4 | PUT | `/api/citas/{id}` | Actualiza una cita existente |
-| 5 | POST | `/api/historias` | Crea una historia médica |
-| 5 | GET | `/api/historias` | Lista todas las historias médicas |
-| 5 | GET | `/api/historias/{id}` | Consulta una historia médica |
-| 5 | PUT | `/api/historias/{id}` | Actualiza una historia médica |
-| 5 | DELETE | `/api/historias/{id}` | Elimina una historia médica |
-| 5 | POST | `/api/anotaciones` | Crea una anotación de historia médica |
-| 5 | GET | `/api/anotaciones?fechaInicio=...&fechaFin=...` | Lista anotaciones por rango de fecha (desc) |
-| 5 | PUT | `/api/anotaciones/{id}` | Actualiza una anotación |
+`http://localhost:8080`
 
-### Ejemplo body para crear/actualizar una cita (`POST`/`PUT /api/citas`)
+## 4. Endpoints principales
+
+| Método | Endpoint                | Función                             |
+| ------ | ----------------------- | ----------------------------------- |
+| GET    | `/api/formulas`         | Consultar fórmulas médicas          |
+| GET    | `/api/citas`            | Consultar citas por rango de fechas |
+| POST   | `/api/citas`            | Crear una cita                      |
+| PUT    | `/api/citas/{id}`       | Actualizar una cita                 |
+| POST   | `/api/historias`        | Crear una historia médica           |
+| GET    | `/api/historias`        | Consultar historias                 |
+| GET    | `/api/historias/{id}`   | Consultar una historia              |
+| PUT    | `/api/historias/{id}`   | Actualizar una historia             |
+| DELETE | `/api/historias/{id}`   | Eliminar una historia               |
+| POST   | `/api/anotaciones`      | Crear una anotación                 |
+| GET    | `/api/anotaciones`      | Consultar anotaciones por fecha     |
+| PUT    | `/api/anotaciones/{id}` | Actualizar una anotación            |
+
+## 5. Ejemplo para crear una cita
+
 ```json
 {
   "clienteId": 1,
@@ -84,40 +95,38 @@ Esto genera `target/clinica-backend.jar`, listo para comprimir junto al código 
 }
 ```
 
-### Ejemplo body para crear una anotación (`POST /api/anotaciones`)
-```json
-{
-  "historiaId": 1,
-  "medicoId": 3,
-  "descripcion": "Paciente presenta buena evolución, se continua tratamiento."
-}
-```
+## 6. Estructura del proyecto
 
-Puedes probar todo esto con **Postman**, **Insomnia** o la extensión REST Client de IntelliJ.
-
-## 5. Estructura del proyecto (arquitectura Controller/Service/Repository/DTO)
-
-```
+```text
 src/main/java/com/uniminuto/clinica/
 ├── ClinicaApplication.java
-├── controller/     -> Expone los endpoints REST
-├── service/        -> Interfaces con la lógica de negocio
-│   └── impl/        -> Implementaciones de los servicios
-├── repository/     -> Interfaces JpaRepository (acceso a datos)
-├── model/          -> Entidades JPA mapeadas a las tablas de MySQL
-├── dto/            -> Objetos de transferencia (entrada/salida de la API)
-└── exception/      -> Manejo centralizado de errores (GlobalExceptionHandler)
+├── controller/
+├── service/
+│   └── impl/
+├── repository/
+├── model/
+├── dto/
+└── exception/
 ```
 
-## 6. Flujo de Git pedido en el tutorial SSH
+Las carpetas principales se utilizan para separar los controladores, servicios, repositorios, modelos, DTO y manejo de excepciones.
+
+## 7. Compilación
+
+Para generar el proyecto compilado:
 
 ```bash
-git checkout -b 83862_TU_NOMBRE     # rama con estructura codigo_nombre
-git pull origin desarrollo          # o main, según lo indique el docente
-git add .
-git commit -m "Solucion primer parcial: formulas, citas e historia medica"
-git push origin 83862_TU_NOMBRE
+mvn clean package
 ```
 
-Recuerda además subir el `.zip` del código compilado (`mvn clean package` genera el jar en `target/`)
-de forma **individual** en el aula virtual.
+Esto genera los archivos de compilación dentro de la carpeta `target/`.
+
+Para la entrega se debe comprimir el proyecto según las indicaciones del docente y subir el `.zip` al aula virtual.
+
+## 8. Git
+
+La rama utilizada para el proyecto es:
+
+`codigo_radilson_rivaldo`
+
+El proyecto también se encuentra en GitHub.
